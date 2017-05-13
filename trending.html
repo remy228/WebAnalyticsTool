@@ -1,0 +1,649 @@
+	<!DOCTYPE html>
+	
+	
+	<html>
+	<head>
+		<title>Trending News</title>
+	</head>
+	<body>
+		<h1>Trending News</h1>
+		
+		<form id="myForm" action="trending.html">
+			<label for = "keyword_filter">Keyword Filter</label>
+			<input type ="text" id="keyword_filter" name="keyword_filter"/>
+				<button onclick="return callback()">GO</button>
+				
+		</form> 
+		<div>
+		<table>
+			<tr id="first"> 
+				<td id="first1"> </td>
+				<td id ="first1a"></td>
+				<td id="first2"> </td>
+			</tr>
+			<tr id="second">
+				<td id="second1"></td>
+				<td id="second1a"></td>
+				<td id="second2"></td>
+				
+			</tr>
+			<tr id="third">
+				<td id="third1"></td>
+				<td id="third1a"></td>
+				<td id="third2"></td>
+				
+			</tr>
+			<tr id="fourth">
+				<td id="fourth1"></td>
+				<td id="fourth1a"></td>
+				<td id="fourth2"></td>
+				
+			</tr>
+			<tr id="fifth">
+				<td id="fifth1"></td>
+				<td id="fifth1a"></td>
+				<td id="fifth2"></td>
+				
+			</tr>
+			<tr id="sixth">
+				<td id="sixth1"></td>
+				<td id="sixth1a"></td>
+				<td id="sixth2"></td>
+				
+			</tr>
+			<tr id="seventh">
+				<td id="seventh1"></td>
+				<td id="seventh1a"></td>
+				<td id="seventh2"></td>
+				
+			</tr>
+			<tr id="eighth">
+				<td id="eigth1"></td>
+				<td id="eigth1a"></td>
+				<td id="eigth2"></td>
+				
+			</tr>
+			<tr id="ninth">
+				<td id="ninth1"></td>
+				<td id="ninth1a"></td>
+				<td id="ninth2"></td>
+				
+			</tr>
+			<tr id="tenth">
+				<td id="tenth1"></td>
+				<td id="tenth1a"></td>
+				<td id="tenth2"></td>
+				
+			</tr>
+			
+		</table>
+		
+			
+	
+			
+			
+		
+		
+		</div>	
+	
+		<textarea id = "area" rows="100000" cols="40" style="border:none;">
+			
+	</textarea>
+	<script>
+	callback();
+	window.onload = function(){
+	
+		setInterval(callback, 30000);
+	
+	}
+			
+	
+	function callback() {
+			h = document.getElementById("keyword_filter").value;
+			if(h.length == 0){
+				h = "";
+			}
+			else
+			{
+				h = String(h);
+			}
+	
+	
+			
+	var locate = window.location.search;
+	
+	var seconds= Math.round((new Date().getTime() /1000) - (48*60*60));
+	//edit start
+	if(locate.search("proxy_format") >=0)
+	{
+		
+		if(locate.search("keyword_filter")>=0)
+		{
+	
+		
+		
+			locate=locate.replace("?", '');
+	locate=locate.split("&");
+	
+	locate[0]=locate[0].split("=");
+	locate[1]=locate[1].split("=");
+	
+	
+	if(locate[0][0].search("proxy_format"))
+	{
+	url = locate[1][1];
+	h=locate[0][1];
+	console.log(url);
+	}
+	else
+	{
+	h = locate[0][1];
+	url=locate[1][1];
+	
+	}
+		} //we weroking here
+		else
+		{	
+		url=locate.replace("?proxy_format=", '');
+		h = " ";
+	
+	}
+	}
+	else
+	{
+	
+			url="rss";
+	
+		if(locate.search("keyword_filter")>=0)
+		{
+			h=locate.replace("?keyword_filter=", '');
+		}
+		else
+		{
+			h =" ";
+		}
+	}
+	//edit stop
+	if(url == "json")
+	{
+	
+		var request = new XMLHttpRequest();
+		request.open("GET","proxy.php?f="+'json'+"&h="+h,true);
+		
+		request.onreadystatechange=function()
+		{
+			if(request.readyState == 3)	
+			{	
+		
+				data : { proxy_format : "json" }
+			}
+			if(request.readyState == 4)	
+			{	
+			var data = request.response;
+			var json1 = JSON.parse(data);
+			var json = JSON.parse(json1);
+			var channel=json.channel;
+			if(channel.length>0)
+			{
+			var words = [];
+			for(var i =0; i< channel.length; i++)
+			{
+					var title = channel[i].title;
+					var description = channel[i].description;
+					var link = channel[i].link;
+					var pub = channel[i].pub_date;
+					title = title.split(" ");
+					description = description.split(" ");
+					if(title)
+					{
+					words=words.concat(title);
+					}
+					if(description)
+					{
+					words=words.concat(description);
+					}
+					
+						
+	
+				
+			}
+
+			var array = words;
+			//removing trailing blankspaces [link],[comments] [the, are, on, a, or, for, an, and, it, by]
+			count = 0;
+			for(var i =0;i <array.length;i++){
+			var s  = array[i];
+
+
+			if((!(/\s/.test(s)))&& array[i]!="[link]" && array[i]!="[comments]" &&array[i]!="" &&array[i]!="&#32;"){
+
+			words[count] = array[i];
+			count++;
+			}
+
+			}
+			
+
+			var frequent = frequent_words(words);
+			var fre = arrayf(frequent);
+			var compute=fading(frequent,channel);
+			pub_date = compute[0];   
+			url = compute[1];
+			fading = compute[2];
+			
+			//Displaying the urls for each freqently occuring words.
+			var y=-1;
+			var m=-1;
+			var loop =["first1", "first1a", "first2", "second1", "second1a", "second2", "third1", "third1a", "third2", "fourth1", "fourth1a","fourth2", "fifth1", "fifth1a", "fifth2", "sixth1", "sixth1a", "sixth2", "seventh1", "seventh1a", "seventh2", "eigth1", "eigth1a", "eigth2", "ninth1", "ninth1a", "ninth2", "tenth1", "tenth1a", "tenth2"];
+			for (var z=0; z<30; z=z+3){
+					y=y+1;
+					m=m+1;
+					document.getElementById(loop[z]).innerHTML = "<b>" +fre[y]+ "</b>";
+					if(compute[2][m] == 0){
+						y=y+1;
+						document.getElementById(loop[z+1]).innerHTML = fre[y];
+					
+						document.getElementById(loop[z+2]).innerHTML = "<img src='red.png' width ='"+fre[y]+"' height='30'>";
+						
+					} 
+					else if(compute[2][m] == 1){
+						y=y+1;
+						document.getElementById(loop[z+1]).innerHTML = fre[y];
+				
+						document.getElementById(loop[z+2]).innerHTML = "<img src='green.jpg' width ='"+fre[y]+"' height='30'>";
+						
+					}
+					
+					
+			}	
+			 
+					
+			 var g ="<trending_news_topics>"; 
+	
+			 //words url fading 
+		var count =0;
+			for(var b=0; b<url.length;b++)
+			{
+				var t = "<trending>";
+				t+="<keyword>" + fre[count] + "</keyword>";
+				t+="<frequency_score>" +fre[count+1] +"</frequency_score>";
+				t+="<query_filter>"+h+"</query_filter>";
+						count= count+2;
+	
+				//console.log(pub_date[b]);
+				
+	    for(var p=0; p<url[b].length; p++)
+				{
+				var y=t + "<url>"+url[b][p]+"</url></trending>";
+				g+=y;
+					//console.log(url[b][p]);
+				}
+	//						console.log(y);
+	
+			}
+			g+="</trending_news_topics>";
+			
+			
+					document.getElementById("area").innerHTML =g;
+	
+			//console.log(fading);
+			//console.log(url.length);
+									
+			} // end of if - validation
+			
+		}
+		}
+		request.send();
+	   
+	}//end of json "sarika"
+	else
+	{
+	
+	if (window.XMLHttpRequest) {
+	      request = new XMLHttpRequest();
+	}
+	else if (window.ActiveXObject)  {
+	    request =new ActiveXObject("Microsoft.XMLHTTP");
+	}
+		request.open("GET","proxy.php?f="+'rss'+"&h="+h,true);
+	request.overrideMimeType('text/xml');
+	
+		request.onreadystatechange=function()
+		{
+			if(request.readyState == 3)	
+			{	
+		
+				data : { proxy_format : "rss" }
+			}
+			if(request.readyState == 4)	
+			{	
+			
+			
+			
+			
+			var parser = new DOMParser();
+			var xmlDoc = parser.parseFromString(request.responseText, "application/xml");
+			var channel = xmlDoc.getElementsByTagName('channel');
+			var ti=xmlDoc.getElementsByTagName('title');
+			
+			var des=xmlDoc.getElementsByTagName('description');
+			//var pub=xmlDoc.getElementsByTagName('pubDate');
+			//var link=xmlDoc.getElementsByTagName('link');
+			var words = [];
+	
+			var title=[];
+			for(var j=0; j<channel.length; j++)
+			{
+				
+					var item =	channel[j].getElementsByTagName('item')
+					var title = channel[j].getElementsByTagName('title');
+					var description= channel[j].getElementsByTagName('description');
+					//var pubDate =channel[j].getElementsByTagName('pubDate');
+					//var link = channel[j].getElementsByTagName('link');
+	
+					for(var i=0; i< title.length; i++)
+					{
+					var z =title[i].childNodes[0].nodeValue;
+					z=z.trim();
+					z = z.split(" ");
+					
+
+					words=words.concat(z);
+					
+					
+					var dec = description[i].childNodes[0].nodeValue;
+					dec=dec.trim();
+					dec = dec.split(" ");
+					
+
+					words=words.concat(dec);	
+					
+					}
+					
+				
+			
+			}
+			
+			//removing dirty characters
+			var array = words;
+			//removing trailing blankspaces [link],[comments] [the, are, on, a, or, for, an, and, it, by]
+			count = 0;
+			for(var i =0;i <array.length;i++){
+			var s  = array[i];
+
+
+			if((!(/\s/.test(s)))&& array[i]!="[link]" && array[i]!="[comments]" &&array[i]!="" &&array[i]!="&#32;"){
+			
+
+			words[count] = array[i];
+			count++;
+			
+			}
+
+			}
+			
+			
+			
+	
+			var frequent = frequent_words(words);
+			var fre = arrayf(frequent);
+			console.log(channel);
+			var compute=fading_rss(frequent,channel);
+			pub_date = compute[0];   
+			url = compute[1];
+			fading = compute[2];
+			
+			var y=-1;
+			var m=-1;
+			var loop =["first1", "first1a", "first2", "second1", "second1a", "second2", "third1", "third1a", "third2", "fourth1", "fourth1a","fourth2", "fifth1", "fifth1a", "fifth2", "sixth1", "sixth1a", "sixth2", "seventh1", "seventh1a", "seventh2", "eigth1", "eigth1a", "eigth2", "ninth1", "ninth1a", "ninth2", "tenth1", "tenth1a", "tenth2"];
+			for (var z=0; z<30; z=z+3){
+					y=y+1;
+					m=m+1;
+					document.getElementById(loop[z]).innerHTML = "<b>" +fre[y]+ "</b>";
+					if(compute[2][m] == 1){
+						y=y+1;
+						document.getElementById(loop[z+1]).innerHTML = fre[y];
+					
+						document.getElementById(loop[z+2]).innerHTML = "<img src='green.jpg' width ='"+fre[y]+"' height='30'>";
+						
+					} 
+					else if(compute[2][m] == 0){
+						y=y+1;
+						document.getElementById(loop[z+1]).innerHTML = fre[y];
+				
+						document.getElementById(loop[z+2]).innerHTML = "<img src='red.png' width ='"+fre[y]+"' height='30'>";
+						
+					}
+					
+					
+			}	
+			
+			//Displaying the urls for each freqently occuring words.
+	
+	    
+	    
+			 var g ="<trending_news_topics>"; 
+	
+			 //words url fading 
+		var count =0;
+			for(var b=0; b<url.length;b++)
+			{
+				var t = "<trending>";
+				t+="<keyword>" + fre[count] + "</keyword>";
+				t+="<frequency_score>" +fre[count+1] +"</frequency_score>";
+				t+="<query_filter>"+h+"</query_filter>";
+						count= count+2;
+	
+				
+	    for(var p=0; p<url[b].length; p++)
+				{
+				var y=t + "<url>"+url[b][p]+"</url></trending>";
+				g+=y;
+				}
+	
+			}
+			g+="</trending_news_topics>";
+			
+			document.getElementById("area").innerHTML =g;
+			
+		}
+		}
+		request.send();
+	} //end of rss "sarika"
+	
+	function arrayf(frequent_words)
+	{
+		var fre = [];
+		for(var d=0; d < frequent_words.length; d++)
+		{
+			
+				fre=fre.concat(frequent_words[d][0]);
+				
+				fre =fre.concat(frequent_words[d][1]);
+	
+			
+		}
+		console.log(fre);
+		return fre;
+		
+	}
+	
+	
+	
+	function frequent_words(words)
+	{
+	var wordCounts = { };
+	
+	var f = wordCounts[0];
+	 for(var i = 0; i < words.length; i++)
+	   	{
+	   		if(wordCounts[words[i]])
+	   		{	
+	        	  	 wordCounts[words[i]] = wordCounts[words[i]] + 1 ;
+	
+	    	}
+	    	else
+	    	{
+	   	 	wordCounts[words[i]] = 1;
+	
+	    	}
+	    
+	   	} 
+	var n = Object.keys(wordCounts).length;
+			
+		
+	var items = Object.keys(wordCounts).map(function(key) {
+	    return [key, wordCounts[key]];
+	});
+	
+	// Sort the array based on the second element
+	items.sort(function(first, second) {
+	    return second[1] - first[1];
+	});
+	var frequent = [];
+	for(var k = 0;k<10;k++)
+	frequent.push(items[k]);
+	
+	return frequent;
+	
+	}
+	function fading_rss(frequent, channel)
+	{
+			var url=[];
+			var y=[];
+			var fading= [];
+			for(var h=0; h<frequent.length;h++)
+			{
+						var l = [];
+						
+						var top = 0;
+	
+			for(var j =0; j< channel.length; j++)
+			{
+				
+					var temp =[];
+					var item =	channel[j].getElementsByTagName('item')
+					var title = channel[j].getElementsByTagName('title');
+					var description= channel[j].getElementsByTagName('description');
+					var pubDate = channel[j].getElementsByTagName('pubDate');
+					var link =	channel[j].getElementsByTagName('link')
+	
+					for(var i=0; i< title.length; i++)
+					{
+	
+					var temp =[];
+					var z =title[i].childNodes[0].nodeValue;
+					z=z.trim();
+					z = z.split(" ");
+					temp=temp.concat(z);
+					
+					var dec = description[i].childNodes[0].nodeValue;
+					dec=dec.trim();
+					dec = dec.split(" ");
+					temp=temp.concat(dec);	
+					//console.log(temp);
+					
+					//console.log(link[i]);
+					
+					
+					
+					if(temp.indexOf(frequent[h][0]) >=0 )
+					{
+						if(top == 0)
+						{
+							top = 1;
+	
+							var te=pubDate[i].textContent;
+							//console.log(te);
+							if(te > seconds)
+							{
+							y.push(te);
+							fading.push(1);
+							}
+							else
+							{
+								//console.log(te);
+	
+							y.push(te);
+							fading.push(0);
+	
+							}
+							
+						}
+						
+						l.push(link[i].textContent);
+						//console.log(link[i].textContent)
+					}
+					
+					
+					
+					}
+					
+					
+					
+					
+			}  // end of for
+			url.push(l);
+			}
+	console.log(fading);
+		return [y, url, fading];
+	}
+	
+	function fading(frequent,channel)
+	{
+				
+			var url=[];
+			var y=[];
+			var fading= [];
+			for(var h=0; h<frequent.length;h++)
+			{
+						var l = [];
+						
+						var top = 0;
+	
+			for(var i =0; i< channel.length; i++)
+			{
+	
+					var temp =[];
+					var title = channel[i].title;
+					var description = channel[i].description;
+					title=title.toLowerCase();
+					description = description.toLowerCase();
+					title = title.split(" ");
+					description = description.split(" ");
+					temp =temp.concat(title);
+					temp =temp.concat(description);
+					if(temp.indexOf(frequent[h][0]) >=0 )
+					{
+						if(top == 0)
+						{
+							top = 1;
+							var te=channel[i].pub_date;
+							if(te > seconds)
+							{
+							y.push(channel[i].pub_date);
+							fading.push(1);
+							}
+							else
+							{
+							y.push((channel[i].pub_date));
+							fading.push(0);
+	
+							}
+							
+						}
+						
+						l.push(channel[i].link);
+					}
+					
+			}
+			url.push(l);
+			}
+			//console.log(y);
+		return [y, url, fading];			
+	}
+	
+	}
+	</script>
+	</body>
+	</html>

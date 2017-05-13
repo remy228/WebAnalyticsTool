@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT trending_news_topics (trending+)>
+	<!ELEMENT trending (keyword,frequency_score, query_filter, url)>
+		<!ELEMENT keyword (#PCDATA)>		
+		<!ELEMENT frequency_score (#PCDATA)>
+		<!ELEMENT query_filter (#PCDATA)>
+		<!ELEMENT url (#PCDATA)>
+		<!ENTITY CS "computer science">
+	
+			<!ATTLIST frequency_score fading CDATA "1">
+
