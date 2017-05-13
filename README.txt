@@ -1,8 +1,3 @@
-Group Members:
-
-Jayashree Prabunathan
-Sarika Padmashali
-Remya Mohanan
 
 The url need to enter the program is:
 <url>trending.html
